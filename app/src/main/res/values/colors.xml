@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="bottom_bg">#9900ff00</color>
+    <color name="ThemeColor">#ff5c00</color>
+    <color name="font_color">#333333</color>
+    <color name="white">#ffffff</color>
+
+    <color name="themes">#3388bb</color>
+    <color name="yellow">#fed630</color>
+    <color name="background">#eee</color>
+    <color name="login_no">#ccc</color>
+    <color name="textBlue">#287BDF</color>
+    <color name="blue">#3388bb</color>
+    <color name="warn_time_blue">#40bbfc</color>
+    <color name="blue_light">#ddeff9</color>
+    <color name="blue_bottom">#56b3f5</color>
+    <color name="title">#333</color>
+    <color name="black">#080404</color>
+    <color name="whitehint">#d3f4ff</color>
+    <color name="blackColor">#000000</color>
+    <color name="mohu">#90000000</color>
+    <color name="red">#eb504e</color>
+    <color name="green">#339966</color>
+    <color name="green_light">#0db09b</color>
+    <color name="green_sky">#b9e6e0</color>
+    <color name="gray">#585858</color>
+    <color name="orange">#ff9a14</color>
+    <color name="bottom">#999</color>
+    <color name="txt_black">#666</color>
+    <color name="tenderbottem">#feefb8</color>
+    <color name="punchclockgray">#e6e6e6</color>
+    <color name="message_item_de">#dedfe0</color>
+
+    <color name="test_spacing2">#179641</color>
+    <color name="main_blue">#2191bf</color>
+    <color name="divide_grey">#e8e8e8</color>
+    <color name="divide_grey1">#f4f4f4</color>
+
+    <color name="homeview_orange">#ffab5a</color>
+    <color name="homeview_blue">#5ebfe7</color>
+    <color name="homeview_green">#a0e792</color>
+
+    <color name="home_blue">#5e8cf7</color>
+    <color name="mapd">#00000000</color>
+
+    <color name="main_home_blue">#37bafe</color>
+    <color name="main_home_bluelight">#5f8cf7</color>
+    <color name="main_home_orange">#ffa300</color>
+    <color name="divide_greyf4">#f4f4f4</color>
+
+    <color name="toppicitem1">#cacaca</color>
+    <color name="toppicitem11">#FAF7F7</color>
+    <color name="toppicitem2">#58f0a5</color>
+    <color name="toppicitem3">#f68396</color>
+    <color name="pump_detail_now_icon_grey">#7b7b7b</color>
+    <color name="pump_detail_now_icon_blue">#5e8cf7</color>
+    <color name="background_grey">#f7f7f9</color>
+    <color name="door_red">#fb5e5e</color>
+
+    <color name="home_mine_yonghuxinxi">#37bafe</color>
+    <color name="home_mine_xiugaimima">#0dd1d3</color>
+    <color name="home_mine_yijianfankui">#ff5b5b</color>
+    <color name="home_mine_jianchagengxin">#ffa55b</color>
+    <color name="home_mine_caozuorizhi">#588eff</color>
+    <color name="pressure_detail_msg_name">#444</color>
+    <color name="dtu_text_select">#34a0e6</color>
+    <color name="warehousing_primit">#42ad8c</color>
+    <color name="warehousing">#2894c3</color>
+
+    <color name="search_et_color">#458B00</color>
+    <color name="main_right_emnu">#29b6f6</color>
+    <color name="scap_top">#3fac93</color>
+</resources>
