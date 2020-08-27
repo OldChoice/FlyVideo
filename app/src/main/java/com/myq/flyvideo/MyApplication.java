@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
+import androidx.multidex.MultiDex;
+
 import com.danikula.videocache.HttpProxyCacheServer;
 
 import gr.free.grfastuitils.GrUtilsInstance;
@@ -38,6 +40,7 @@ public class MyApplication extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     /**

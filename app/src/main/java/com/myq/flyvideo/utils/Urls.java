@@ -76,7 +76,7 @@ public class Urls {
     public static String[] ssVideos = {
             //0
             "http://jzvd.nathen.cn/video/4542c17b-170c25a8e14-0007-1823-c86-de200.mp4",
-            "http://jzvd.nathen.cn/video/5ab693c5-170c25a8e2b-0007-1823-c86-de200.mp4",
+            "https://zk2.cdt-md.com/2020/01/31/dDUAPMywPVYMt6kK/playlist.m3u8",
             "http://jzvd.nathen.cn/video/375dd5c6-170c25a8e44-0007-1823-c86-de200.mp4",
             "http://jzvd.nathen.cn/video/51e8b629-170c25a8e61-0007-1823-c86-de200.mp4",
             "http://jzvd.nathen.cn/video/1fbd7323-170c25a8e7c-0007-1823-c86-de200.mp4",
