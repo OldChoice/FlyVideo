@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,7 +19,7 @@ import java.util.List;
 
 /**
  * Create by guorui on 2020/8/11
- * Last update 2020-8-13 10:48:06
+ * Last update 2020-8-28 10:58:51
  * Description:
  **/
 public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyHolder> {
@@ -67,7 +68,7 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyHold
 
 
         if (onitemClick != null) {
-            holder.ivImg.setOnClickListener(new View.OnClickListener() {
+            holder.linAll.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //在TextView的地方进行监听点击事件，并且实现接口
@@ -112,6 +113,7 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyHold
     class MyHolder extends RecyclerView.ViewHolder {
         private TextView tvName, tvMsg, tvSource;
         private ImageView ivImg;
+        private LinearLayout linAll;
 
         public MyHolder(View view) {
             super(view);
@@ -119,6 +121,7 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyHold
             tvMsg = view.findViewById(R.id.item_menulist_msg);
             tvSource = view.findViewById(R.id.item_menulist_source);
             ivImg = view.findViewById(R.id.item_menulist_img);
+            linAll = view.findViewById(R.id.item_menulist_linall);
 
 
         }

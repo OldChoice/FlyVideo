@@ -17,7 +17,6 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning,LockedOrientationActivity,MissingTranslation">
-        <activity android:name=".mainfly.activity.WebViewActivity"></activity>
         <activity
             android:name=".mainfly.activity.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
@@ -34,6 +33,14 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".mainfly.activity.MenuListActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".mainfly.activity.PlayVideoActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".mainfly.activity.WebViewActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:screenOrientation="portrait" />
     </application>

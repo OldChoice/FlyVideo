@@ -3,6 +3,7 @@ package com.myq.flyvideo.mainfly.activity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +11,7 @@ import android.os.Handler;
 import com.myq.flyvideo.mainfly.adapter.MenuListAdapter;
 import com.myq.flyvideo.mainfly.getdata.MovieListVo;
 import com.myq.flyvideo.R;
+import com.myq.flyvideo.utils.MyUrls;
 import com.myq.flyvideo.utils.URLEncodeing;
 import com.myq.flyvideo.myview.DividerDecoration;
 
@@ -24,6 +26,7 @@ import java.util.List;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import gr.free.grfastuitils.activitybase.BaseActivity;
 import gr.free.grfastuitils.tools.LoadUtils;
+import gr.free.grfastuitils.tools.MyToast;
 import gr.free.grfastuitils.tools.ThreadPool;
 
 /**
@@ -90,17 +93,17 @@ public class MenuListActivity extends BaseActivity {
             @Override
             public void onItemClick(int position) {
                 MovieListVo.ListBean listBean = menuListAdapter.getItem(position);
-                System.out.println(position + "-----" + listBean.getName());
-
+                System.out.println(position + "-----" + listBean.getName() + "-----" + listBean.getUrl());
+                getMovieDetails(listBean.getUrl(), listBean.getName());
 
             }
         });
 
     }
 
-    //获取电影目录
+    //获取天龙电影目录
     private void getMovies(String mov) {
-        loadingDialog = new LoadUtils().showBaseDialog(MenuListActivity.this, loadingDialog,"视频搜索中...");
+        loadingDialog = new LoadUtils().showBaseDialog(MenuListActivity.this, loadingDialog, "视频搜索中...");
         MovieListVo movieListVo = new MovieListVo();
         ThreadPool.getInstance().execute(() -> {
             try {
@@ -113,7 +116,7 @@ public class MenuListActivity extends BaseActivity {
                 Elements eurl = doc.select("ul");
                 //获取到的最后一段为视屏信息，然后解析视频列表
                 Elements list = eurl.get(eurl.size() - 1).select("li");
-                System.out.println(list);
+//                System.out.println(list);
                 List<MovieListVo.ListBean> listBeans = new ArrayList<>();
                 for (int i = 0; i < list.size(); i++) {
                     Elements listitem1 = list.get(i).select("a");
@@ -143,25 +146,48 @@ public class MenuListActivity extends BaseActivity {
         });
     }
 
-    //获取电影剧集
-    private void getMovieList(String mov) {
+    //获取当前视频信息列表
+    private void getMovieDetails(String strUrl, String strName) {
+        ArrayList<String> vUrlLists = new ArrayList();
+        ArrayList<String> vNameLists = new ArrayList();
+        loadingDialog = new LoadUtils().showBaseDialog(MenuListActivity.this, loadingDialog, "视频解析中...");
         ThreadPool.getInstance().execute(() -> {
             try {
-                Document doc = Jsoup.connect("http://www.tl86tv.com/Search.asp?keyword=" + URLEncodeing.toURLEncoded(mov))
-                        .data("query", "Java")
-                        .userAgent("Mozilla")
-                        .cookie("auth", "token")
-                        .timeout(3000)
+                Document doc = Jsoup.connect(MyUrls.tianlong + strUrl)
                         .get();
-                Elements eurl = doc.select("ul");
-
+                Elements eUrl = doc.select("div");
+                // System.out.println(eUrl);
+                // System.out.println(eUrl.size());
+                if (eUrl.size() > 47) {
+                    //取第47个位置的，是第一个通道视频资源，其他通道不要
+                    Elements list = eUrl.get(47).select("a");
+                    for (int i = 0; i < list.size(); i++) {
+                        String url = list.get(i).attr("href");
+                        // System.out.println(url);
+                        if (url.length() > 40) {
+                            String vUrl = MyUrls.tianlong + url.substring(24, url.length() - 9);
+                            vUrlLists.add(vUrl);
+                            vNameLists.add(list.get(i).text());
+                            // System.out.println(list.get(i).text());
+                            // System.out.println(url.substring(24, url.length() - 9));
+                        }
+                    }
+                }
+                // 有可能没有视频
+                if (vUrlLists.size() > 0) {
+                    Intent intent = new Intent(this, PlayVideoActivity.class);
+                    intent.putStringArrayListExtra("urls", vUrlLists);
+                    intent.putStringArrayListExtra("names", vNameLists);
+                    intent.putExtra("vName", strName);
+                    startActivity(intent);
+                } else {
+                    MyToast.showShort("无视频");
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            handler.post(() -> {
-
-            });
+            loadingDialog.dismiss();
         });
     }
 

@@ -58,7 +58,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void run() {
 //                getDataMovies();
-                getDataMovieDetail();
+//                getDataMovieDetail();
 //                getDataMovieUrl();
                 handler.post(new Runnable() {
                     @Override
@@ -75,7 +75,7 @@ public class MainActivity extends BaseActivity {
         parseWebUrlHelper.setOnParseListener(new ParseWebUrlHelper.OnParseWebUrlListener() {
             @Override
             public void onFindUrl(String url) {
-                Log.d("webUrl",url);
+                Log.d("webUrl", url);
 //                System.out.println(url+"--------");
                 //*****处理代码
             }
@@ -171,25 +171,15 @@ public class MainActivity extends BaseActivity {
         try {
             Document doc = Jsoup.connect("http://www.tl86tv.com/Movie/65337.Html")
                     .get();
-//            System.out.println(doc);
             Elements eurl = doc.select("div");
-//            System.out.println(eurl);
-//            System.out.println(eurl.size());
-//            System.out.println(eurl.get(47));
-
-//            Elements list1 = eurl.get(eurl.size() - 1).select("span");
-//            System.out.println(list1);
-
             Elements list = eurl.get(eurl.size() - 5).select("a");
-//            System.out.println(list);
 
             for (int i = 0; i < list.size(); i++) {
                 String url = list.get(i).attr("href");
-                System.out.println(url);
-//                Elements listitem2 = list.get(i).select("img");
-//                String img = listitem2.get(0).attr("src");
-//                String name = listitem2.get(0).attr("alt");
-//                String msg = list.get(i).select("div").text();
+//                System.out.println(url);
+                if (url.length() > 40) {
+                    System.out.println(url.substring(24, url.length() - 9));
+                }
             }
 
         } catch (IOException e) {
