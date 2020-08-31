@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * Create by guorui on 2020/8/11
- * Last update 2020-8-28 10:58:51
+ * Last update 2020-8-31 14:56:29
  * Description:
  **/
 public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyHolder> {
@@ -93,6 +93,16 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MyHold
             }
             notifyDataSetChanged();
         }
+    }
+
+    /**
+     * 清除所有数据
+     */
+    public void clear() {
+        if (mDatas != null) {
+            mDatas.clear();
+        }
+        notifyDataSetChanged();
     }
 
     //获取当前item数据

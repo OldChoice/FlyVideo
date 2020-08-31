@@ -1,10 +1,15 @@
 package com.myq.flyvideo.mainfly.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.graphics.Bitmap;
+import android.net.http.SslError;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebResourceResponse;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,7 +21,6 @@ import com.myq.flyvideo.AGVideo.popup.VideoEpisodePopup;
 import com.myq.flyvideo.AGVideo.popup.VideoSpeedPopup;
 import com.myq.flyvideo.R;
 import com.myq.flyvideo.utils.ScreenRotateUtils;
-import com.myq.flyvideo.utils.Urls;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +28,17 @@ import java.util.List;
 import cn.jzvd.JZDataSource;
 import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
+import cn.pedant.SweetAlert.SweetAlertDialog;
+import gr.free.grfastuitils.activitybase.BaseActivity;
+import gr.free.grfastuitils.tools.LoadUtils;
+import gr.free.grfastuitils.tools.ThreadPool;
 
-public class PlayVideoActivity extends AppCompatActivity implements AGVideo.JzVideoListener, ScreenRotateUtils.OrientationChangeListener
+/**
+ * Create by guorui on 2020/8/31
+ * Last update 2020-8-31 17:14:38
+ * Description:播放界面
+ **/
+public class PlayVideoActivity extends BaseActivity implements AGVideo.JzVideoListener, ScreenRotateUtils.OrientationChangeListener
         , VideoSpeedPopup.SpeedChangeListener, VideoEpisodePopup.EpisodeClickListener {
     private AGVideo mPlayer;
     private JZDataSource mJzDataSource;
@@ -39,11 +52,12 @@ public class PlayVideoActivity extends AppCompatActivity implements AGVideo.JzVi
     private ArrayList<String> vUrlLists;
     private ArrayList<String> vNameLists;
     private String strName;
+    private WebView webView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().hide();
         setContentView(R.layout.activity_play_video);
         initVideoData();
         initView();
@@ -64,13 +78,15 @@ public class PlayVideoActivity extends AppCompatActivity implements AGVideo.JzVi
     }
 
     private void initView() {
+        webView = new WebView(this);
         episodes = findViewById(R.id.video_episodes);
         mPlayer = findViewById(R.id.ag_player);
         initEpisodesTablayout();
         mPlayer.setJzVideoListener(this);
-        mJzDataSource = new JZDataSource(episodeList.get(0).getVideoUrl(), episodeList.get(0).getVideoName());
-        mPlayer.setUp(mJzDataSource, JzvdStd.SCREEN_NORMAL, JZMediaExo.class);
-        mPlayer.startVideo();
+//        mJzDataSource = new JZDataSource(episodeList.get(0).getVideoUrl(), episodeList.get(0).getVideoName());
+//        mPlayer.setUp(mJzDataSource, JzvdStd.SCREEN_NORMAL, JZMediaExo.class);
+//        mPlayer.startVideo();
+        toStartLoadVideo(episodeList.get(0).getVideoUrl(), episodeList.get(0).getVideoName(), null);
     }
 
     private void initEpisodesTablayout() {
@@ -104,12 +120,9 @@ public class PlayVideoActivity extends AppCompatActivity implements AGVideo.JzVi
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 //定义方法，判断是否选中
-                int tag = Integer.parseInt(tab.getText().toString());
-                AGEpsodeEntity entity = episodeList.get(tag - 1);
-                mJzDataSource = new JZDataSource(entity.getVideoUrl(), entity.getVideoName());
-                updateTabView(tab, true);
-                playChangeUrl();
-                isNext(tab.getPosition());
+                AGEpsodeEntity entity = episodeList.get(tab.getPosition());
+                toStartLoadVideo(entity.getVideoUrl(), entity.getVideoName(), tab);
+//                System.out.println("zzzzzzzzzzzzzzzzzzzzz"+"---"+tab.getPosition()+"----"+entity.getVideoName());
             }
 
             @Override
@@ -153,6 +166,7 @@ public class PlayVideoActivity extends AppCompatActivity implements AGVideo.JzVi
         super.onDestroy();
         Jzvd.releaseAllVideos();
         ScreenRotateUtils.getInstance(this.getApplicationContext()).setOrientationChangeListener(null);
+        webView.destroy();
     }
 
     /**
@@ -330,5 +344,96 @@ public class PlayVideoActivity extends AppCompatActivity implements AGVideo.JzVi
         }
     }
 
+    private Handler handler = new Handler();
+    private SweetAlertDialog loadingDialog;
+
+    //获取地址并播放
+    private void toStartLoadVideo(String strUrl, String strName, TabLayout.Tab tab) {
+        ThreadPool.getInstance().execute(new Runnable() {
+            @Override
+            public void run() {
+
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        webView.getSettings().setJavaScriptEnabled(true);
+                        webView.loadUrl(strUrl);
+                        webView.setWebViewClient(new WebViewClient() {
+                            //设置在webView点击打开的新网页在当前界面显示,而不跳转到新的浏览器中
+                            @Override
+                            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                                view.loadUrl(url);
+                                return true;
+                            }
+
+                            @Override
+                            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                                super.onPageStarted(view, url, favicon);
+                                loadingDialog = new LoadUtils().showBaseDialog(PlayVideoActivity.this, loadingDialog, "视频加载中...");
+                            }
+
+                            @Override
+                            public void onPageFinished(WebView view, String url) {
+                                super.onPageFinished(view, url);
+                                if (loadingDialog != null) {
+                                    loadingDialog.dismiss();
+                                }
+                            }
+
+                            @Override
+                            public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+                                //抓取所有地址
+                                String[] movTypes = {".m3u8", ".mp4", ".3gp", ".wmv", ".avi", ".rm"};
+                                String strUrls = url;
+                                try {
+                                    //判断地址长度是否大于10，而且头是Http
+                                    if (strUrls.length() > 10 && strUrls.substring(0, 4).equals("http")) {
+                                        // System.out.println(strUrls);
+                                        //判断是否地址后面带?参数，然后去掉只留没参数地址
+                                        strUrls = strUrls.indexOf("?") > 4 ? strUrls.substring(0, strUrls.indexOf("?")) : strUrls;
+                                        for (int i = 0; i < movTypes.length; i++) {
+                                            //如果最后地址尾在的位置和尾长度合等于整个地址长度，那么是视频地址
+                                            if (strUrls.lastIndexOf(movTypes[i]) + movTypes[i].length() == strUrls.length()) {
+                                                //获取一个视频地址就行了
+                                                System.out.println(strUrls);
+                                                handler.post(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        view.stopLoading();
+                                                        if (tab == null) {
+                                                            mJzDataSource = new JZDataSource(url, strName);
+                                                            mPlayer.setUp(mJzDataSource, JzvdStd.SCREEN_NORMAL, JZMediaExo.class);
+                                                            mPlayer.startVideo();
+                                                        } else {
+                                                            mJzDataSource = new JZDataSource(url, strName);
+                                                            updateTabView(tab, true);
+                                                            playChangeUrl();
+                                                            isNext(tab.getPosition());
+                                                            episodes.selectTab(tab);
+                                                        }
+                                                    }
+                                                });
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                } catch (Throwable e) {
+                                    e.printStackTrace();
+                                }
+                                return null;
+                            }
+
+                            @Override
+                            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                                handler.proceed();  //接受所有证书
+                            }
+                        });
+                    }
+                });
+
+            }
+        });
+    }
 
 }

@@ -33,6 +33,11 @@ import gr.free.grfastuitils.activitybase.BaseActivity;
 import gr.free.grfastuitils.tools.LoadUtils;
 import gr.free.grfastuitils.tools.ThreadPool;
 
+/**
+ * Create by guorui on 2020/8/31
+ * Last update 2020/8/31
+ * Description:
+ **/
 public class WebViewActivity extends BaseActivity {
 
     private WebView webView;
@@ -47,9 +52,9 @@ public class WebViewActivity extends BaseActivity {
         setContentView(R.layout.activity_web_view);
 
         etInput = findViewById(R.id.etinput);
-//        webView = findViewById(R.id.web);
-        webView = new WebView(this);
-        webView.setLayoutParams(new ViewGroup.LayoutParams(1, 1));
+        webView = findViewById(R.id.web);
+//        webView = new WebView(this);
+//        webView.setLayoutParams(new ViewGroup.LayoutParams(1, 1));
 
         etInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -59,7 +64,8 @@ public class WebViewActivity extends BaseActivity {
                 return false;
             }
         });
-        etInput.setText("http://m.20mao.com/Play/1-65337-1-48.Html");
+//        etInput.setText("http://m.20mao.com/Play/1-65337-1-48.Html");
+        etInput.setText("http://m.20mao.com/Play/1-46649-1-1.Html");
 
         webss();
 
@@ -155,9 +161,8 @@ public class WebViewActivity extends BaseActivity {
     }
 
 
-    private Handler handler = new Handler();
-
     private void webss() {
+        Handler handler = new Handler();
         ThreadPool.getInstance().execute(new Runnable() {
             @Override
             public void run() {
@@ -167,6 +172,7 @@ public class WebViewActivity extends BaseActivity {
                     public void run() {
                         webView.getSettings().setJavaScriptEnabled(true);
                         webView.loadUrl(etInput.getText().toString());
+//                        webView.loadUrl("https://github.com");
                         webView.setWebViewClient(new WebViewClient() {
                             //设置在webView点击打开的新网页在当前界面显示,而不跳转到新的浏览器中
                             @Override
@@ -179,6 +185,12 @@ public class WebViewActivity extends BaseActivity {
                             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                                 super.onPageStarted(view, url, favicon);
                                 loadingDialog = new LoadUtils().showBaseDialog(WebViewActivity.this, loadingDialog, "加载中...");
+//                                handler.postDelayed(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        view.stopLoading();
+//                                    }
+//                                }, 1000);
                             }
 
                             @Override
@@ -193,16 +205,24 @@ public class WebViewActivity extends BaseActivity {
                             public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
                                 //抓取所有地址
                                 String[] movTypes = {".m3u8", ".mp4", ".3gp", ".wmv", ".avi", ".rm"};
+                                String strUrls = url;
                                 try {
                                     //判断地址长度是否大于10，而且头是Http
-                                    if (url.length() > 10 && url.substring(0, 4).equals("http")) {
-//                                        System.out.println(url);
+                                    if (strUrls.length() > 10 && strUrls.substring(0, 4).equals("http")) {
+                                        //判断是否地址后面带?参数，然后去掉只留没参数地址
+                                        strUrls = strUrls.indexOf("?") > 4 ? strUrls.substring(0, strUrls.indexOf("?")) : strUrls;
                                         for (int i = 0; i < movTypes.length; i++) {
                                             //如果最后地址尾在的位置和尾长度合等于整个地址长度，那么是视频地址
-                                            if (url.lastIndexOf(movTypes[i]) + movTypes[i].length() == url.length()) {
+                                            if (strUrls.lastIndexOf(movTypes[i]) + movTypes[i].length() == strUrls.length()) {
                                                 //获取一个视频地址就行了
+                                                System.out.println(strUrls);
                                                 System.out.println(url);
-                                                stopWebView();
+                                                handler.post(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        view.stopLoading();
+                                                    }
+                                                });
                                                 break;
                                             }
                                         }
@@ -229,15 +249,5 @@ public class WebViewActivity extends BaseActivity {
         });
     }
 
-    private void stopWebView() {
-        webView.pauseTimers();
-//        webView.stopLoading();
-//        handler = null;
-//        webView.removeAllViews();
-//        webView.destroy();
-//        webView = null;
-//        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-
-    }
 
 }

@@ -3,10 +3,14 @@ package com.myq.flyvideo.mainfly.activity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.myq.flyvideo.mainfly.adapter.MenuListAdapter;
 import com.myq.flyvideo.mainfly.getdata.MovieListVo;
@@ -25,18 +29,20 @@ import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import gr.free.grfastuitils.activitybase.BaseActivity;
+import gr.free.grfastuitils.myview.DeletableEditText;
 import gr.free.grfastuitils.tools.LoadUtils;
 import gr.free.grfastuitils.tools.MyToast;
 import gr.free.grfastuitils.tools.ThreadPool;
 
 /**
  * Create by guorui on 2020/8/11
- * Last update 2020-8-13 10:48:13
+ * Last update 2020-8-31 14:12:08
  * Description:视屏搜索目录
  **/
 public class MenuListActivity extends BaseActivity {
 
     private RecyclerView recyclerView;
+    private DeletableEditText etSearch;
     private Handler handler;
     private MenuListAdapter menuListAdapter;
     private SweetAlertDialog loadingDialog;
@@ -50,8 +56,9 @@ public class MenuListActivity extends BaseActivity {
         findView();
         setView();
         setListener();
-        getMovies("大主宰");
-        getMovies("熊猫");
+        getMovies("楚汉传奇");
+        etSearch.setText("楚汉传奇");
+//        getMovies("熊猫");
 
 
     }
@@ -64,7 +71,8 @@ public class MenuListActivity extends BaseActivity {
 
     @Override
     public void findView() {
-        recyclerView = findViewById(R.id.menulist_recycle);
+        recyclerView = findViewById(R.id.menu_list_recycle);
+        etSearch = findViewById(R.id.menu_list_et_search);
 
 
     }
@@ -82,22 +90,45 @@ public class MenuListActivity extends BaseActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHorizontalScrollBarEnabled(false);
         recyclerView.setAdapter(menuListAdapter);
-        recyclerView.addItemDecoration(new DividerDecoration(MenuListActivity.this, LinearLayoutManager.VERTICAL, Color.parseColor("#f4f4f4"), 1, 0, 0));
+//        recyclerView.addItemDecoration(new DividerDecoration(MenuListActivity.this, LinearLayoutManager.VERTICAL, Color.parseColor("#f4f4f4"), 1, 0, 0));
 
 
     }
 
     @Override
     public void setListener() {
-        menuListAdapter.setOnitemClickLintener(new MenuListAdapter.OnitemClick() {
-            @Override
-            public void onItemClick(int position) {
-                MovieListVo.ListBean listBean = menuListAdapter.getItem(position);
-                System.out.println(position + "-----" + listBean.getName() + "-----" + listBean.getUrl());
-                getMovieDetails(listBean.getUrl(), listBean.getName());
+        etSearch.setOnKeyListener(keyListener);
+        menuListAdapter.setOnitemClickLintener(position -> {
+            MovieListVo.ListBean listBean = menuListAdapter.getItem(position);
+            System.out.println(position + "-----" + listBean.getName() + "-----" + listBean.getUrl());
+            getMovieDetails(listBean.getUrl(), listBean.getName());
 
-            }
         });
+
+    }
+
+    /**
+     * 搜索触发事件
+     */
+    private View.OnKeyListener keyListener = new View.OnKeyListener() {
+
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
+                clearInputMethod();
+                menuListAdapter.clear();
+                getMovies(etSearch.getText().toString());
+            }
+            return false;
+        }
+    };
+
+    /**
+     * 让软键盘消失
+     */
+    protected void clearInputMethod() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 
     }
 
@@ -108,15 +139,15 @@ public class MenuListActivity extends BaseActivity {
         ThreadPool.getInstance().execute(() -> {
             try {
                 Document doc = Jsoup.connect("http://www.tl86tv.com/Search.asp?keyword=" + URLEncodeing.toURLEncoded(mov))
-//                        .data("query", "Java")
-//                        .userAgent("Mozilla")
-//                        .cookie("auth", "token")
-//                        .timeout(3000)
+                        .data("query", "Java")
+                        .userAgent("Mozilla")
+                        .cookie("auth", "token")
+                        .timeout(300000)
                         .get();
-                Elements eurl = doc.select("ul");
+                Elements eUrl = doc.select("ul");
                 //获取到的最后一段为视屏信息，然后解析视频列表
-                Elements list = eurl.get(eurl.size() - 1).select("li");
-//                System.out.println(list);
+                Elements list = eUrl.get(eUrl.size() - 1).select("li");
+                // System.out.println(list);
                 List<MovieListVo.ListBean> listBeans = new ArrayList<>();
                 for (int i = 0; i < list.size(); i++) {
                     Elements listitem1 = list.get(i).select("a");
@@ -173,16 +204,19 @@ public class MenuListActivity extends BaseActivity {
                         }
                     }
                 }
-                // 有可能没有视频
-                if (vUrlLists.size() > 0) {
-                    Intent intent = new Intent(this, PlayVideoActivity.class);
-                    intent.putStringArrayListExtra("urls", vUrlLists);
-                    intent.putStringArrayListExtra("names", vNameLists);
-                    intent.putExtra("vName", strName);
-                    startActivity(intent);
-                } else {
-                    MyToast.showShort("无视频");
-                }
+                handler.post(() -> {
+                    // 有可能没有视频
+                    if (vUrlLists.size() > 0) {
+                        Intent intent = new Intent(MenuListActivity.this, PlayVideoActivity.class);
+                        intent.putStringArrayListExtra("urls", vUrlLists);
+                        intent.putStringArrayListExtra("names", vNameLists);
+                        intent.putExtra("vName", strName);
+                        startActivity(intent);
+                    } else {
+                        MyToast.showShort("无视频");
+                    }
+
+                });
 
             } catch (IOException e) {
                 e.printStackTrace();
