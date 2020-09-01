@@ -131,6 +131,7 @@ public class VideoEpisodePopup extends PopupWindow {
             this.playNum = playNum;
             episodeList.get(this.playNum - 1).setPlay(true);
         }
+        episodeAdapter.notifyDataSetChanged();
     }
 
     public void startDismissTimer() {

@@ -317,7 +317,9 @@ public class PlayVideoActivity extends BaseActivity implements AGVideo.JzVideoLi
             videoEpisodePopup = new VideoEpisodePopup(this, episodeList);
             videoEpisodePopup.setEpisondeClickListener(this);
         }
-        videoEpisodePopup.setPlayNum(1);
+        int ps = episodes.getSelectedTabPosition() + 1;
+        System.out.println(ps + "-----------");
+        videoEpisodePopup.setPlayNum(ps);
         videoEpisodePopup.showAtLocation(getWindow().getDecorView(), Gravity.RIGHT, 0, 0);
     }
 
