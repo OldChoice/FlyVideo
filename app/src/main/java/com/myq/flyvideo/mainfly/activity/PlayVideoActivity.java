@@ -35,7 +35,7 @@ import gr.free.grfastuitils.tools.ThreadPool;
 
 /**
  * Create by guorui on 2020/8/31
- * Last update 2020-8-31 17:14:38
+ * Last update 2020-9-1 15:23:16
  * Description:播放界面
  **/
 public class PlayVideoActivity extends BaseActivity implements AGVideo.JzVideoListener, ScreenRotateUtils.OrientationChangeListener
@@ -317,9 +317,7 @@ public class PlayVideoActivity extends BaseActivity implements AGVideo.JzVideoLi
             videoEpisodePopup = new VideoEpisodePopup(this, episodeList);
             videoEpisodePopup.setEpisondeClickListener(this);
         }
-        int ps = episodes.getSelectedTabPosition() + 1;
-        System.out.println(ps + "-----------");
-        videoEpisodePopup.setPlayNum(ps);
+        videoEpisodePopup.setPlayNum(episodes.getSelectedTabPosition() + 1);
         videoEpisodePopup.showAtLocation(getWindow().getDecorView(), Gravity.RIGHT, 0, 0);
     }
 
