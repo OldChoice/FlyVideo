@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
@@ -15,18 +14,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.fanchen.sniffing.DefaultFilter;
-import com.fanchen.sniffing.LogUtil;
-import com.fanchen.sniffing.SniffingUICallback;
-import com.fanchen.sniffing.SniffingVideo;
-import com.fanchen.sniffing.Util;
-import com.fanchen.sniffing.node.Node;
-import com.fanchen.sniffing.web.SniffingUtil;
 import com.myq.flyvideo.R;
-
-import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import gr.free.grfastuitils.activitybase.BaseActivity;
@@ -35,7 +23,7 @@ import gr.free.grfastuitils.tools.ThreadPool;
 
 /**
  * Create by guorui on 2020/8/31
- * Last update 2020/8/31
+ * Last update 2020-9-2 16:25:25
  * Description:
  **/
 public class WebViewActivity extends BaseActivity {
@@ -66,8 +54,9 @@ public class WebViewActivity extends BaseActivity {
         });
 //        etInput.setText("http://m.20mao.com/Play/1-65337-1-48.Html");
         etInput.setText("http://m.20mao.com/Play/1-46649-1-1.Html");
+//        etInput.setText("https://movie.youku.com/");
 
-        webss();
+        webss1();
 
 
     }
@@ -81,6 +70,7 @@ public class WebViewActivity extends BaseActivity {
 
 
     private void webss1() {
+        Handler handler = new Handler();
         webView.getSettings().setAllowContentAccess(true);
         webView.getSettings().setDatabaseEnabled(true);
 //        webView.getSettings().setAllowFileAccessFromFileURLs(true);
@@ -98,7 +88,9 @@ public class WebViewActivity extends BaseActivity {
         webView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);//设置渲染优先级
         webView.getSettings().setUseWideViewPort(true);
 //        webView.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36");
-//        webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
+        webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
+        webView.getSettings().setDomStorageEnabled(true);
+//        webView.getSettings().setSupportMultipleWindows(true);// 新加
 
         webView.getSettings().setJavaScriptEnabled(true);
 //        webView.loadUrl("https://www.baidu.com/");
@@ -129,14 +121,25 @@ public class WebViewActivity extends BaseActivity {
             public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
                 //抓取所有地址
                 String[] movTypes = {".m3u8", ".mp4", ".3gp", ".wmv", ".avi", ".rm"};
+                String strUrls = url;
                 try {
                     //判断地址长度是否大于10，而且头是Http
-                    if (url.length() > 10 && url.substring(0, 4).equals("http")) {
-                        System.out.println(url);
+                    if (strUrls.length() > 10 && strUrls.substring(0, 4).equals("http")) {
+                        //判断是否地址后面带?参数，然后去掉只留没参数地址
+                        strUrls = strUrls.indexOf("?") > 4 ? strUrls.substring(0, strUrls.indexOf("?")) : strUrls;
                         for (int i = 0; i < movTypes.length; i++) {
                             //如果最后地址尾在的位置和尾长度合等于整个地址长度，那么是视频地址
-                            if (url.lastIndexOf(movTypes[i]) + movTypes[i].length() == url.length()) {
+                            if (strUrls.lastIndexOf(movTypes[i]) + movTypes[i].length() == strUrls.length()) {
+                                //获取一个视频地址就行了
+                                System.out.println(strUrls);
                                 System.out.println(url);
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        view.stopLoading();
+                                    }
+                                });
+                                break;
                             }
                         }
 

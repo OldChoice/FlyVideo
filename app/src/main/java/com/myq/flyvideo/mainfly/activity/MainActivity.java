@@ -46,6 +46,13 @@ public class MainActivity extends BaseActivity {
                 startActivity(new Intent(MainActivity.this, MenuListActivity.class));
             }
         });
+        Button btnDown = findViewById(R.id.btn_down);
+        btnDown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, DownLodeActivity.class));
+            }
+        });
         Button btnweb = findViewById(R.id.btn_web);
         btnweb.setOnClickListener(new View.OnClickListener() {
             @Override

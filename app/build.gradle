@@ -52,8 +52,15 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.6.2'
 
     implementation 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
-    implementation 'com.github.fanchen001:Sniffing:1.0.1'//这里包括了jsoup，所以不在引用下面的
-    // implementation 'org.jsoup:jsoup:1.9.2'
+//    implementation 'com.github.fanchen001:Sniffing:1.0.1'//这里包括了jsoup，所以不在引用下面的
+     implementation 'org.jsoup:jsoup:1.9.2'
+
+    implementation 'com.arialyy.aria:core:3.8.12'
+    annotationProcessor 'com.arialyy.aria:compiler:3.8.12'
+    implementation 'com.arialyy.aria:m3u8Component:3.8.12'
+
+
+
 
 
 }
