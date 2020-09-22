@@ -5,7 +5,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.KeyEvent;
@@ -17,7 +16,6 @@ import com.myq.flyvideo.mainfly.getdata.MovieListVo;
 import com.myq.flyvideo.R;
 import com.myq.flyvideo.utils.MyUrls;
 import com.myq.flyvideo.utils.URLEncodeing;
-import com.myq.flyvideo.myview.DividerDecoration;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
