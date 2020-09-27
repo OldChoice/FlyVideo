@@ -54,7 +54,7 @@ public class WebViewActivity extends BaseActivity {
         });
 //        etInput.setText("http://m.20mao.com/Play/1-65337-1-48.Html");
         etInput.setText("http://m.20mao.com/Play/1-46649-1-1.Html");
-//        etInput.setText("https://movie.youku.com/");
+        etInput.setText("https://tv.cctv.com/live/");
 
         webss1();
 

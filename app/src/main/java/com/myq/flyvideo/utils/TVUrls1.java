@@ -5,7 +5,7 @@ package com.myq.flyvideo.utils;
  * Last update 2020/9/21
  * Description:
  **/
-public class TVUrls {
+public class TVUrls1 {
 
 
     public static String[] videoPosterList = {

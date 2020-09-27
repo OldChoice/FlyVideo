@@ -36,6 +36,7 @@ import static cn.jzvd.Jzvd.backPress;
  * Create by guorui on 2020/9/21
  * Last update 2020/9/21
  * Description:视频直播列表
+ * http://tv.91kds.cc/api/hdjsnd.zip
  **/
 public class TVListActivity extends BaseActivity implements BGAOnRVItemClickListener {
 
