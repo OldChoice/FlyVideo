@@ -11,11 +11,11 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.myq.flyvideo.mainfly.adapter.MenuListAdapter;
 import com.myq.flyvideo.mainfly.getdata.MovieListVo;
 import com.myq.flyvideo.R;
 import com.myq.flyvideo.utils.MyUrls;
-import com.myq.flyvideo.utils.URLEncodeing;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,7 +34,7 @@ import gr.free.grfastuitils.tools.ThreadPool;
 
 /**
  * Create by guorui on 2020/8/11
- * Last update 2020-8-31 14:12:08
+ * Last update 2021-10-14 16:48:52
  * Description:视屏搜索目录
  **/
 public class MenuListActivity extends BaseActivity {
@@ -136,7 +136,7 @@ public class MenuListActivity extends BaseActivity {
         MovieListVo movieListVo = new MovieListVo();
         ThreadPool.getInstance().execute(() -> {
             try {
-                Document doc = Jsoup.connect("http://www.tl86dy.com/Search/-------------.html?wd=" + mov + "&Submit=搜索")
+                Document doc = Jsoup.connect(MyUrls.tianlong + "/Search/-------------.html?wd=" + mov + "&Submit=搜索")
                         .data("query", "Java")
                         .userAgent("Mozilla")
                         .cookie("auth", "token")
@@ -183,38 +183,87 @@ public class MenuListActivity extends BaseActivity {
         ThreadPool.getInstance().execute(() -> {
             try {
                 Document doc = Jsoup.connect(MyUrls.tianlong + strUrl)
+                        .timeout(300000)
                         .get();
                 Elements eUrl = doc.select("div");
                 // System.out.println(eUrl);
                 // System.out.println(eUrl.size());
+                // System.out.println(eUrl.get(33));
                 if (eUrl.size() > 47) {
-                    //取第47个位置的，是第一个通道视频资源，其他通道不要
-                    Elements list = eUrl.get(47).select("a");
-                    for (int i = 0; i < list.size(); i++) {
-                        String url = list.get(i).attr("href");
-                        // System.out.println(url);
-                        if (url.length() > 40) {
-                            String vUrl = MyUrls.tianlong + url.substring(24, url.length() - 9);
-                            vUrlLists.add(vUrl);
-                            vNameLists.add(list.get(i).text());
-                            // System.out.println(list.get(i).text());
-                            // System.out.println(url.substring(24, url.length() - 9));
-                        }
-                    }
-                }
-                handler.post(() -> {
-                    // 有可能没有视频
-                    if (vUrlLists.size() > 0) {
-                        Intent intent = new Intent(MenuListActivity.this, PlayVideoActivity.class);
-                        intent.putStringArrayListExtra("urls", vUrlLists);
-                        intent.putStringArrayListExtra("names", vNameLists);
-                        intent.putExtra("vName", strName);
-                        startActivity(intent);
+                    //视屏都在33位置里好多通道资源
+                    Elements lists = eUrl.get(33).select("div");
+                    //视屏通道数是总div减去头部一个尾部两个共三个，剩下的都是通道数
+                    if (lists.size() > 4) {
+                        handler.post(() -> {
+                            List<String> setDialog = new ArrayList<>();
+                            for (int a = 2; a < lists.size() - 1; a++) {
+                                Elements es = lists.get(a).select("a");
+                                setDialog.add("通道" + (a - 1) + "共:" + es.size() + "个视频");
+                            }
+
+                            new MaterialDialog.Builder(this)
+                                    .items(setDialog)
+                                    .itemsCallback((dialog, view, position, text) -> {
+                                        Elements list = lists.get(position + 2).select("a");
+                                        for (int i = 0; i < list.size(); i++) {
+                                            String url = list.get(i).attr("href");
+                                            if (url.length() > 40) {
+                                                String vUrl = MyUrls.tianlong + url.substring(24, url.length() - 9);
+                                                vUrlLists.add(vUrl);
+                                                vNameLists.add(list.get(i).text());
+                                                // System.out.println(list.get(i).text());
+                                                // System.out.println(url.substring(24, url.length() - 9));
+                                            }
+                                        }
+
+                                        handler.post(() -> {
+                                            // 有可能没有视频
+                                            if (vUrlLists.size() > 0) {
+                                                Intent intent = new Intent(MenuListActivity.this, PlayVideoActivity.class);
+                                                intent.putStringArrayListExtra("urls", vUrlLists);
+                                                intent.putStringArrayListExtra("names", vNameLists);
+                                                intent.putExtra("vName", strName);
+                                                startActivity(intent);
+                                            } else {
+                                                MyToast.showShort("无视频");
+                                            }
+
+                                        });
+                                    })
+                                    .show();
+
+                        });
                     } else {
-                        MyToast.showShort("无视频");
+                        Elements list = lists.get(2).select("a");
+                        for (int i = 0; i < list.size(); i++) {
+                            String url = list.get(i).attr("href");
+                            if (url.length() > 40) {
+                                String vUrl = MyUrls.tianlong + url.substring(24, url.length() - 9);
+                                vUrlLists.add(vUrl);
+                                vNameLists.add(list.get(i).text());
+                                // System.out.println(list.get(i).text());
+                                // System.out.println(url.substring(24, url.length() - 9));
+                            }
+                        }
+
+
+                        handler.post(() -> {
+                            // 有可能没有视频
+                            if (vUrlLists.size() > 0) {
+                                Intent intent = new Intent(MenuListActivity.this, PlayVideoActivity.class);
+                                intent.putStringArrayListExtra("urls", vUrlLists);
+                                intent.putStringArrayListExtra("names", vNameLists);
+                                intent.putExtra("vName", strName);
+                                startActivity(intent);
+                            } else {
+                                MyToast.showShort("无视频");
+                            }
+
+                        });
                     }
 
-                });
+                }
+
 
             } catch (IOException e) {
                 e.printStackTrace();

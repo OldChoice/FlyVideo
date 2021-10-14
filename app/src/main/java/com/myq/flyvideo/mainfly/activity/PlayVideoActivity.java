@@ -89,6 +89,7 @@ public class PlayVideoActivity extends BaseActivity implements AGVideo.JzVideoLi
         toStartLoadVideo(episodeList.get(0).getVideoUrl(), episodeList.get(0).getVideoName(), null);
     }
 
+    //下方的剧集列表
     private void initEpisodesTablayout() {
         episodes.clearOnTabSelectedListeners();
         episodes.removeAllTabs();
