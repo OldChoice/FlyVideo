@@ -136,7 +136,7 @@ public class MenuListActivity extends BaseActivity {
         MovieListVo movieListVo = new MovieListVo();
         ThreadPool.getInstance().execute(() -> {
             try {
-                Document doc = Jsoup.connect("http://www.tl86tv.com/Search.asp?keyword=" + URLEncodeing.toURLEncoded(mov))
+                Document doc = Jsoup.connect("http://www.tl86dy.com/Search/-------------.html?wd=" + mov + "&Submit=搜索")
                         .data("query", "Java")
                         .userAgent("Mozilla")
                         .cookie("auth", "token")
