@@ -8,8 +8,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/desktopf/AndroidPj/FlyVideo/app/src/main/res/drawable/bg_tab_video_episodes.xml" value="0.38229166666666664" />
         <entry key="..\:/desktopf/AndroidPj/FlyVideo/app/src/main/res/layout/activity_agvideo.xml" value="0.36614583333333334" />
+        <entry key="..\:/desktopf/AndroidPj/FlyVideo/app/src/main/res/layout/activity_menu_list.xml" value="0.36614583333333334" />
         <entry key="..\:/desktopf/AndroidPj/FlyVideo/app/src/main/res/layout/activity_play_video.xml" value="0.36614583333333334" />
+        <entry key="..\:/desktopf/AndroidPj/FlyVideo/app/src/main/res/layout/layout_ag_video.xml" value="0.36614583333333334" />
         <entry key="..\:/desktopf/AndroidPj/FlyVideo/app/src/main/res/layout/tab_video_episodes.xml" value="0.36614583333333334" />
       </map>
     </option>
