@@ -11,10 +11,10 @@ import com.danikula.videocache.HttpProxyCacheServer;
 import gr.free.grfastuitils.GrUtilsInstance;
 
 /**
- * 能不能干掉这个类，非常想干掉这个类，可以不可以移到MainActivity
- * Created by Nathen
- * On 2015/12/01 11:29
- */
+* Create by guorui on 2021/10/18
+* Last update 2021/10/18
+* Description:
+**/
 public class MyApplication extends Application {
 
     private HttpProxyCacheServer proxy;
